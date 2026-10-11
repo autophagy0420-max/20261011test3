@@ -1,0 +1,534 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>우리 반 자리배치표</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        padding: 24px 16px;
+        font-family: "Malgun Gothic", sans-serif;
+        background: #f3f6fb;
+        color: #25324a;
+    }
+
+    .app {
+        max-width: 900px;
+        margin: auto;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 8px;
+        font-size: 28px;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #748097;
+        margin-bottom: 24px;
+    }
+
+    .toolbar {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    button {
+        border: none;
+        border-radius: 10px;
+        padding: 12px 18px;
+        font-size: 15px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+    }
+
+    .primary {
+        background: #4f6df5;
+        color: white;
+    }
+
+    .secondary {
+        background: white;
+        color: #34415a;
+        border: 1px solid #dbe2ee;
+    }
+
+    .danger {
+        background: #fff0f0;
+        color: #d94a4a;
+    }
+
+    .classroom {
+        background: white;
+        border-radius: 20px;
+        padding: 24px;
+        box-shadow: 0 8px 30px #25324a12;
+    }
+
+    .front-label {
+        text-align: center;
+        color: #8792a7;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+
+    .teacher-desk {
+        width: 55%;
+        max-width: 350px;
+        margin: 0 auto 32px;
+        padding: 15px;
+        text-align: center;
+        border-radius: 10px;
+        color: white;
+        background: linear-gradient(135deg, #56657e, #34415a);
+        font-weight: bold;
+        letter-spacing: 3px;
+        box-shadow: 0 5px 0 #25324a;
+    }
+
+    .board {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .seat {
+        min-width: 0;
+        min-height: 100px;
+        border: 2px solid #dfe6f2;
+        border-radius: 12px;
+        background: #f8faff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 4px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .seat:hover {
+        border-color: #7188ff;
+        background: #eef1ff;
+    }
+
+    .seat-number {
+        font-size: 11px;
+        color: #96a0b2;
+        margin-bottom: 8px;
+    }
+
+    .student-name {
+        font-size: 15px;
+        font-weight: bold;
+        color: #34415a;
+        text-align: center;
+        overflow-wrap: anywhere;
+    }
+
+    .empty {
+        color: #b5bdcb;
+        font-size: 13px;
+        font-weight: normal;
+    }
+
+    .hint {
+        text-align: center;
+        margin-top: 20px;
+        color: #8993a6;
+        font-size: 13px;
+        line-height: 1.7;
+    }
+
+    .editor {
+        background: white;
+        border-radius: 16px;
+        padding: 22px;
+        margin-top: 20px;
+        box-shadow: 0 8px 30px #25324a0a;
+    }
+
+    .editor h2 {
+        margin: 0 0 8px;
+        font-size: 19px;
+    }
+
+    .editor p {
+        color: #748097;
+        font-size: 13px;
+        line-height: 1.6;
+    }
+
+    textarea {
+        width: 100%;
+        min-height: 150px;
+        resize: vertical;
+        padding: 14px;
+        border: 1px solid #dbe2ee;
+        border-radius: 10px;
+        font-family: inherit;
+        font-size: 14px;
+        line-height: 1.8;
+        outline-color: #7188ff;
+    }
+
+    .editor-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .count {
+        text-align: center;
+        margin-top: 14px;
+        font-size: 13px;
+        color: #748097;
+    }
+
+    @media (max-width: 520px) {
+        body {
+            padding: 18px 10px;
+        }
+
+        h1 {
+            font-size: 23px;
+        }
+
+        .classroom {
+            padding: 14px 10px;
+        }
+
+        .board {
+            gap: 6px;
+        }
+
+        .seat {
+            min-height: 76px;
+            border-radius: 8px;
+            padding: 5px 2px;
+        }
+
+        .student-name {
+            font-size: 12px;
+        }
+
+        .teacher-desk {
+            margin-bottom: 24px;
+        }
+
+        button {
+            padding: 11px 13px;
+            font-size: 13px;
+        }
+    }
+
+    @media print {
+        body {
+            background: white;
+            padding: 0;
+        }
+
+        .toolbar, .editor, .hint {
+            display: none !important;
+        }
+
+        .classroom {
+            box-shadow: none;
+            border: 1px solid #ddd;
+        }
+
+        .seat {
+            background: white;
+            border-color: #aaa;
+            break-inside: avoid;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+    }
+</style>
+</head>
+
+<body>
+<div class="app">
+
+    <h1>🏫 우리 반 자리배치표</h1>
+    <div class="subtitle">함께 배우고 성장하는 우리 교실</div>
+
+    <div class="toolbar">
+        <button class="primary" onclick="randomizeSeats()">
+            🎲 랜덤 자리배치
+        </button>
+        <button class="secondary" onclick="window.print()">
+            🖨️ 인쇄하기
+        </button>
+        <button class="secondary" onclick="resetSeats()">
+            ↩️ 초기화
+        </button>
+    </div>
+
+    <div class="classroom">
+        <div class="front-label">▲ 교실 앞쪽</div>
+        <div class="teacher-desk">교 탁</div>
+
+        <div class="board" id="board"></div>
+
+        <div class="count" id="count"></div>
+    </div>
+
+    <div class="hint">
+        자리를 클릭하면 해당 학생의 이름을 수정할 수 있습니다.<br>
+        학생 명단을 입력한 후 랜덤 자리배치 버튼을 눌러 보세요.
+    </div>
+
+    <section class="editor">
+        <h2>📝 학생 명단 관리</h2>
+        <p>
+            학생 이름을 한 줄에 한 명씩 입력하세요.
+            최대 25명까지 배치할 수 있습니다.
+        </p>
+
+        <textarea id="studentList"
+            placeholder="예시:
+김민수
+이서연
+박지호
+최유진"></textarea>
+
+        <div class="editor-actions">
+            <button class="primary" onclick="applyStudents()">
+                명단 적용하기
+            </button>
+            <button class="secondary" onclick="loadExample()">
+                예시 명단 넣기
+            </button>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    const TOTAL_SEATS = 25;
+
+    const defaultNames = [
+        "김민수", "이서연", "박지호", "최유진", "정하늘",
+        "윤지우", "강민준", "한예린", "오서준", "임수빈",
+        "조은우", "신지민", "권도윤", "황서아", "안지호",
+        "송하윤", "류민재", "전유나", "홍서진", "문예준",
+        "배수아", "백도현", "남지유", "심우진", "차예원"
+    ];
+
+    let students = [];
+    let seats = [];
+
+    // 저장된 데이터 불러오기
+    function loadData() {
+        try {
+            const savedStudents = localStorage.getItem("classStudents");
+            const savedSeats = localStorage.getItem("classSeats");
+
+            students = savedStudents
+                ? JSON.parse(savedStudents)
+                : [...defaultNames];
+
+            seats = savedSeats
+                ? JSON.parse(savedSeats)
+                : [...students];
+
+            students = students.slice(0, TOTAL_SEATS);
+            seats = seats.slice(0, TOTAL_SEATS);
+
+            while (students.length < TOTAL_SEATS) {
+                students.push("");
+            }
+
+            while (seats.length < TOTAL_SEATS) {
+                seats.push("");
+            }
+        } catch (error) {
+            students = [...defaultNames];
+            seats = [...defaultNames];
+        }
+    }
+
+    // 데이터 저장
+    function saveData() {
+        try {
+            localStorage.setItem("classStudents", JSON.stringify(students));
+            localStorage.setItem("classSeats", JSON.stringify(seats));
+        } catch (error) {
+            console.warn("브라우저에 데이터를 저장하지 못했습니다.");
+        }
+    }
+
+    // 자리배치표 그리기
+    function renderBoard() {
+        const board = document.getElementById("board");
+        board.innerHTML = "";
+
+        seats.forEach((name, index) => {
+            const seat = document.createElement("div");
+            seat.className = "seat";
+            seat.tabIndex = 0;
+            seat.setAttribute("role", "button");
+            seat.setAttribute(
+                "aria-label",
+                `${index + 1}번 자리, ${name || "빈자리"}`
+            );
+
+            const number = document.createElement("div");
+            number.className = "seat-number";
+            number.textContent = `${index + 1}번 자리`;
+
+            const student = document.createElement("div");
+            student.className = "student-name";
+            student.textContent = name || "빈자리";
+
+            if (!name) {
+                student.classList.add("empty");
+            }
+
+            seat.append(number, student);
+
+            seat.addEventListener("click", () => editSeat(index));
+
+            seat.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    editSeat(index);
+                }
+            });
+
+            board.appendChild(seat);
+        });
+
+        const filled = seats.filter(name => name.trim()).length;
+        document.getElementById("count").textContent =
+            `전체 ${TOTAL_SEATS}석 · 배정 ${filled}명 · 빈자리 ${TOTAL_SEATS - filled}석`;
+
+        document.getElementById("studentList").value =
+            students.filter(name => name.trim()).join("\n");
+    }
+
+    // 학생 이름 수정
+    function editSeat(index) {
+        const current = seats[index];
+        const answer = prompt(
+            `${index + 1}번 자리 학생 이름을 입력하세요.\n비우려면 내용을 지우고 확인을 누르세요.`,
+            current
+        );
+
+        if (answer === null) return;
+
+        seats[index] = answer.trim();
+
+        // 명단에도 수정 사항 반영
+        students[index] = seats[index];
+
+        saveData();
+        renderBoard();
+    }
+
+    // 명단 적용
+    function applyStudents() {
+        const input = document.getElementById("studentList").value;
+
+        const names = input
+            .split(/\r?\n/)
+            .map(name => name.trim())
+            .filter(Boolean);
+
+        if (names.length > TOTAL_SEATS) {
+            alert("학생 이름은 최대 25명까지 입력할 수 있습니다.");
+            return;
+        }
+
+        students = [...names];
+
+        while (students.length < TOTAL_SEATS) {
+            students.push("");
+        }
+
+        seats = [...students];
+
+        saveData();
+        renderBoard();
+
+        alert(`${names.length}명의 학생 명단을 적용했습니다.`);
+    }
+
+    // 무작위 자리배치
+    function randomizeSeats() {
+        const names = students.filter(name => name.trim());
+
+        if (names.length === 0) {
+            alert("먼저 학생 명단을 입력해 주세요.");
+            return;
+        }
+
+        // Fisher-Yates 셔플 알고리즘
+        for (let i = names.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [names[i], names[j]] = [names[j], names[i]];
+        }
+
+        seats = [...names];
+
+        while (seats.length < TOTAL_SEATS) {
+            seats.push("");
+        }
+
+        saveData();
+        renderBoard();
+    }
+
+    // 초기화: 명단은 유지하고 원래 순서로 복원
+    function resetSeats() {
+        const confirmed = confirm(
+            "자리배치를 명단 순서대로 되돌릴까요?"
+        );
+
+        if (!confirmed) return;
+
+        seats = [...students];
+
+        while (seats.length < TOTAL_SEATS) {
+            seats.push("");
+        }
+
+        saveData();
+        renderBoard();
+    }
+
+    // 예시 명단
+    function loadExample() {
+        document.getElementById("studentList").value =
+            defaultNames.join("\n");
+    }
+
+    // 시작
+    loadData();
+    renderBoard();
+</script>
+
+</body>
+</html>
